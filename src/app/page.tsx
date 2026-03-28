@@ -68,12 +68,111 @@ function QiParticle({ delay, x }: { delay: number; x: number }) {
   );
 }
 
-/* Evolution forms: shrimp → lobster → dragon → immortal */
+/* SVG: Chinese-style lobster (凡虾) */
+function LobsterSVG({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Body */}
+      <ellipse cx="60" cy="62" rx="18" ry="24" fill="url(#lobster-body)" />
+      {/* Tail segments */}
+      <ellipse cx="60" cy="88" rx="12" ry="8" fill="url(#lobster-body)" opacity="0.9" />
+      <path d="M48 92 Q60 108 72 92" stroke="var(--crimson)" strokeWidth="2" fill="var(--crimson)" opacity="0.6" />
+      {/* Head */}
+      <ellipse cx="60" cy="42" rx="14" ry="10" fill="url(#lobster-body)" />
+      {/* Eyes */}
+      <circle cx="52" cy="38" r="2.5" fill="#1a1a2e" />
+      <circle cx="68" cy="38" r="2.5" fill="#1a1a2e" />
+      <circle cx="52.8" cy="37.5" r="1" fill="var(--gold)" />
+      <circle cx="68.8" cy="37.5" r="1" fill="var(--gold)" />
+      {/* Antennae */}
+      <path d="M50 36 Q38 18 30 12" stroke="var(--crimson)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <path d="M70 36 Q82 18 90 12" stroke="var(--crimson)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      {/* Claws */}
+      <path d="M42 50 Q28 44 22 38 Q18 34 24 32 Q30 30 34 36 Q36 40 42 46" fill="var(--crimson)" opacity="0.8" />
+      <path d="M78 50 Q92 44 98 38 Q102 34 96 32 Q90 30 86 36 Q84 40 78 46" fill="var(--crimson)" opacity="0.8" />
+      {/* Legs */}
+      <path d="M46 58 L34 64" stroke="var(--crimson)" strokeWidth="1.2" opacity="0.5" />
+      <path d="M46 66 L36 74" stroke="var(--crimson)" strokeWidth="1.2" opacity="0.5" />
+      <path d="M74 58 L86 64" stroke="var(--crimson)" strokeWidth="1.2" opacity="0.5" />
+      <path d="M74 66 L84 74" stroke="var(--crimson)" strokeWidth="1.2" opacity="0.5" />
+      <defs>
+        <radialGradient id="lobster-body" cx="0.5" cy="0.4" r="0.6">
+          <stop offset="0%" stopColor="var(--crimson-glow)" />
+          <stop offset="100%" stopColor="var(--crimson)" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
+/* SVG: Chinese-style immortal (仙人) — flowing robes, cloud motifs */
+function ImmortalSVG({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Aura */}
+      <circle cx="60" cy="50" r="36" fill="url(#immortal-aura)" opacity="0.15" />
+      {/* Cloud beneath feet */}
+      <ellipse cx="60" cy="105" rx="22" ry="6" fill="url(#cloud-grad)" opacity="0.5" />
+      <ellipse cx="50" cy="103" rx="10" ry="5" fill="url(#cloud-grad)" opacity="0.3" />
+      <ellipse cx="72" cy="104" rx="8" ry="4" fill="url(#cloud-grad)" opacity="0.3" />
+      {/* Flowing robe */}
+      <path d="M44 55 Q38 75 34 98 Q48 102 60 100 Q72 102 86 98 Q82 75 76 55 Z" fill="url(#robe-grad)" />
+      {/* Inner robe detail */}
+      <path d="M50 58 Q52 78 54 96 L60 98 L66 96 Q68 78 70 58 Z" fill="url(#inner-robe)" opacity="0.6" />
+      {/* Sash */}
+      <path d="M46 60 Q54 64 60 62 Q66 64 74 60" stroke="var(--gold)" strokeWidth="1.5" fill="none" />
+      <path d="M44 62 Q40 78 38 88" stroke="var(--gold)" strokeWidth="1" opacity="0.5" fill="none" />
+      {/* Sleeves flowing */}
+      <path d="M44 55 Q32 58 24 68 Q28 70 34 66 Q38 64 44 62" fill="url(#robe-grad)" opacity="0.8" />
+      <path d="M76 55 Q88 58 96 68 Q92 70 86 66 Q82 64 76 62" fill="url(#robe-grad)" opacity="0.8" />
+      {/* Head */}
+      <circle cx="60" cy="38" r="11" fill="url(#skin-grad)" />
+      {/* Hair / topknot */}
+      <path d="M50 34 Q50 24 56 20 Q60 18 64 20 Q70 24 70 34" fill="#1a1a2e" />
+      <path d="M56 20 Q60 10 64 20" fill="#1a1a2e" />
+      {/* Hair pin */}
+      <line x1="54" y1="18" x2="66" y2="18" stroke="var(--gold)" strokeWidth="1.5" />
+      <circle cx="54" cy="18" r="1.5" fill="var(--gold)" />
+      <circle cx="66" cy="18" r="1.5" fill="var(--gold)" />
+      {/* Face */}
+      <ellipse cx="56" cy="38" rx="1.5" ry="1.8" fill="#1a1a2e" />
+      <ellipse cx="64" cy="38" rx="1.5" ry="1.8" fill="#1a1a2e" />
+      <path d="M57 43 Q60 45 63 43" stroke="var(--crimson)" strokeWidth="0.8" fill="none" />
+      {/* Beard */}
+      <path d="M56 46 Q58 54 56 60" stroke="#8b7355" strokeWidth="0.8" fill="none" opacity="0.6" />
+      <path d="M60 47 Q60 56 58 62" stroke="#8b7355" strokeWidth="0.8" fill="none" opacity="0.6" />
+      <path d="M64 46 Q62 54 64 60" stroke="#8b7355" strokeWidth="0.8" fill="none" opacity="0.6" />
+      <defs>
+        <radialGradient id="immortal-aura" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="var(--gold)" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        <linearGradient id="robe-grad" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="var(--purple)" />
+          <stop offset="100%" stopColor="var(--purple-deep)" />
+        </linearGradient>
+        <linearGradient id="inner-robe" x1="0.5" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="var(--gold-dim)" />
+          <stop offset="100%" stopColor="var(--purple-deep)" />
+        </linearGradient>
+        <linearGradient id="cloud-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="50%" stopColor="var(--gold-dim)" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+        <radialGradient id="skin-grad" cx="0.5" cy="0.4" r="0.5">
+          <stop offset="0%" stopColor="#f0d48a" />
+          <stop offset="100%" stopColor="#d4a853" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+}
+
+/* Evolution: just two forms — lobster → immortal */
 const EVOLUTION_FORMS = [
-  { emoji: "🦐", label: "凡虾" },
-  { emoji: "🦞", label: "灵虾" },
-  { emoji: "🐉", label: "化龙" },
-  { emoji: "🧙", label: "飞升" },
+  { id: "lobster", label: "凡虾" },
+  { id: "immortal", label: "飞升" },
 ];
 
 /* Ascending lobster with cultivation evolution effect */
@@ -185,7 +284,7 @@ function AscensionLobster() {
       />
 
       {/* The evolving creature */}
-      <motion.span
+      <motion.div
         key={formIndex}
         initial={phase === "burst" ? { scale: 0.3, opacity: 0 } : false}
         animate={{
@@ -199,7 +298,7 @@ function AscensionLobster() {
           repeat: phase === "gather" || phase === "idle" ? Infinity : 0,
           ease: phase === "ascend" ? [0.16, 1, 0.3, 1] : "easeInOut",
         }}
-        className="relative text-6xl select-none z-10"
+        className="relative z-10 w-24 h-24"
         style={{
           filter: phase === "burst"
             ? "drop-shadow(0 0 20px rgba(212,168,83,0.6)) drop-shadow(0 0 40px rgba(107,63,160,0.4))"
@@ -208,8 +307,12 @@ function AscensionLobster() {
               : "none",
         }}
       >
-        {currentForm.emoji}
-      </motion.span>
+        {currentForm.id === "lobster" ? (
+          <LobsterSVG className="w-full h-full" />
+        ) : (
+          <ImmortalSVG className="w-full h-full" />
+        )}
+      </motion.div>
 
       {/* Light beam during ascend */}
       <AnimatePresence>
