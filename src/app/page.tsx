@@ -68,42 +68,66 @@ function QiParticle({ delay, x }: { delay: number; x: number }) {
   );
 }
 
-/* Ascending lobster with cultivation breakthrough effect */
+/* Evolution forms: shrimp → lobster → dragon → immortal */
+const EVOLUTION_FORMS = [
+  { emoji: "🦐", label: "凡虾" },
+  { emoji: "🦞", label: "灵虾" },
+  { emoji: "🐉", label: "化龙" },
+  { emoji: "🧙", label: "飞升" },
+];
+
+/* Ascending lobster with cultivation evolution effect */
 function AscensionLobster() {
   const [phase, setPhase] = useState<"gather" | "ascend" | "burst" | "idle">("gather");
+  const [formIndex, setFormIndex] = useState(0);
+  const [showFlash, setShowFlash] = useState(false);
 
   const startCycle = useCallback(() => {
     setPhase("gather");
     setTimeout(() => setPhase("ascend"), 2000);
-    setTimeout(() => setPhase("burst"), 3400);
-    setTimeout(() => setPhase("idle"), 5000);
+    setTimeout(() => {
+      setPhase("burst");
+      setShowFlash(true);
+      // Evolve on burst
+      setFormIndex((prev) => (prev + 1) % EVOLUTION_FORMS.length);
+      setTimeout(() => setShowFlash(false), 400);
+    }, 3400);
+    setTimeout(() => setPhase("idle"), 5200);
   }, []);
 
   useEffect(() => {
-    // Initial delay then start
-    const t = setTimeout(() => {
-      startCycle();
-    }, 1500);
-    // Loop the cycle
-    const interval = setInterval(() => {
-      startCycle();
-    }, 8000);
+    const t = setTimeout(() => startCycle(), 1500);
+    const interval = setInterval(() => startCycle(), 8000);
     return () => {
       clearTimeout(t);
       clearInterval(interval);
     };
   }, [startCycle]);
 
+  const currentForm = EVOLUTION_FORMS[formIndex];
+
   return (
-    <div className="relative flex items-center justify-center w-40 h-52">
-      {/* Qi particles rising around the lobster */}
+    <div className="relative flex flex-col items-center justify-center w-44 h-56">
+      {/* Qi particles */}
       {Array.from({ length: 12 }).map((_, i) => (
-        <QiParticle
-          key={i}
-          delay={i * 0.4 + 0.5}
-          x={(Math.random() - 0.5) * 60}
-        />
+        <QiParticle key={i} delay={i * 0.4 + 0.5} x={(Math.random() - 0.5) * 60} />
       ))}
+
+      {/* White flash on evolution */}
+      <AnimatePresence>
+        {showFlash && (
+          <motion.div
+            initial={{ opacity: 0.9 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 z-30 rounded-full"
+            style={{
+              background: "radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%)",
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Expanding energy rings on burst */}
       <AnimatePresence>
@@ -115,9 +139,7 @@ function AscensionLobster() {
               exit={{ opacity: 0 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="absolute w-32 h-32 rounded-full border border-gold/50"
-              style={{
-                boxShadow: "0 0 30px rgba(212,168,83,0.3), inset 0 0 30px rgba(212,168,83,0.1)",
-              }}
+              style={{ boxShadow: "0 0 30px rgba(212,168,83,0.3), inset 0 0 30px rgba(212,168,83,0.1)" }}
             />
             <motion.div
               initial={{ scale: 0.3, opacity: 0.6 }}
@@ -130,32 +152,26 @@ function AscensionLobster() {
         )}
       </AnimatePresence>
 
-      {/* Gathering glow beneath lobster */}
+      {/* Gathering glow */}
       <motion.div
         animate={{
           opacity: phase === "gather" ? [0, 0.4, 0.6] : phase === "ascend" ? [0.6, 0.8, 0.3] : phase === "burst" ? [0.8, 0] : 0,
           scale: phase === "gather" ? [0.8, 1, 1.1] : phase === "burst" ? [1.1, 2] : 1,
         }}
         transition={{ duration: phase === "burst" ? 0.6 : 1.5, ease: "easeInOut" }}
-        className="absolute bottom-8 w-24 h-24 rounded-full"
-        style={{
-          background: "radial-gradient(circle, rgba(212,168,83,0.25) 0%, rgba(107,63,160,0.1) 50%, transparent 70%)",
-        }}
+        className="absolute bottom-12 w-24 h-24 rounded-full"
+        style={{ background: "radial-gradient(circle, rgba(212,168,83,0.25) 0%, rgba(107,63,160,0.1) 50%, transparent 70%)" }}
       />
 
-      {/* Outer ring — breathes normally, flares on burst */}
+      {/* Outer ring */}
       <motion.div
         animate={{
           scale: phase === "burst" ? [1, 1.4, 1] : [1, 1.12, 1],
           opacity: phase === "burst" ? [0.5, 0.8, 0.3] : [0.3, 0.1, 0.3],
           borderColor: phase === "burst" ? "rgba(212,168,83,0.6)" : "rgba(212,168,83,0.3)",
         }}
-        transition={{
-          duration: phase === "burst" ? 0.8 : 4,
-          repeat: phase === "burst" ? 0 : Infinity,
-          ease: "easeInOut",
-        }}
-        className="absolute inset-4 rounded-full border"
+        transition={{ duration: phase === "burst" ? 0.8 : 4, repeat: phase === "burst" ? 0 : Infinity, ease: "easeInOut" }}
+        className="absolute inset-6 rounded-full border"
       />
 
       {/* Middle ring */}
@@ -164,24 +180,22 @@ function AscensionLobster() {
           scale: phase === "burst" ? [1, 1.3, 1] : [1, 1.08, 1],
           opacity: phase === "burst" ? [0.6, 0.9, 0.4] : [0.5, 0.2, 0.5],
         }}
-        transition={{
-          duration: phase === "burst" ? 0.6 : 3,
-          repeat: phase === "burst" ? 0 : Infinity,
-          ease: "easeInOut",
-          delay: phase === "burst" ? 0.1 : 0.5,
-        }}
-        className="absolute inset-8 rounded-full border border-purple/40"
+        transition={{ duration: phase === "burst" ? 0.6 : 3, repeat: phase === "burst" ? 0 : Infinity, ease: "easeInOut", delay: phase === "burst" ? 0.1 : 0.5 }}
+        className="absolute inset-10 rounded-full border border-purple/40"
       />
 
-      {/* The lobster — floats up during ascend, shakes on burst */}
+      {/* The evolving creature */}
       <motion.span
+        key={formIndex}
+        initial={phase === "burst" ? { scale: 0.3, opacity: 0 } : false}
         animate={{
           y: phase === "gather" ? [0, -3, 0] : phase === "ascend" ? [0, -28] : phase === "burst" ? [-28, -32, -26, -28] : [-28, -24, -28],
-          scale: phase === "burst" ? [1, 1.15, 1] : 1,
-          rotate: phase === "burst" ? [0, -5, 5, 0] : 0,
+          scale: phase === "burst" ? [0.3, 1.2, 1] : 1,
+          rotate: phase === "burst" ? [0, -8, 8, 0] : 0,
+          opacity: 1,
         }}
         transition={{
-          duration: phase === "gather" ? 2 : phase === "ascend" ? 1.4 : phase === "burst" ? 0.5 : 3,
+          duration: phase === "gather" ? 2 : phase === "ascend" ? 1.4 : phase === "burst" ? 0.6 : 3,
           repeat: phase === "gather" || phase === "idle" ? Infinity : 0,
           ease: phase === "ascend" ? [0.16, 1, 0.3, 1] : "easeInOut",
         }}
@@ -194,10 +208,10 @@ function AscensionLobster() {
               : "none",
         }}
       >
-        🦞
+        {currentForm.emoji}
       </motion.span>
 
-      {/* Ascending light beam during ascend phase */}
+      {/* Light beam during ascend */}
       <AnimatePresence>
         {(phase === "ascend" || phase === "burst") && (
           <motion.div
@@ -206,12 +220,21 @@ function AscensionLobster() {
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-full origin-bottom"
-            style={{
-              background: "linear-gradient(to top, rgba(212,168,83,0.4), rgba(107,63,160,0.2), transparent)",
-            }}
+            style={{ background: "linear-gradient(to top, rgba(212,168,83,0.4), rgba(107,63,160,0.2), transparent)" }}
           />
         )}
       </AnimatePresence>
+
+      {/* Evolution label */}
+      <motion.p
+        key={`label-${formIndex}`}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: phase === "burst" ? 0.3 : 0 }}
+        className="absolute -bottom-1 text-xs font-mono tracking-[0.2em] text-gold-dim"
+      >
+        {currentForm.label}
+      </motion.p>
     </div>
   );
 }
