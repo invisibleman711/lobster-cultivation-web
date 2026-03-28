@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { features, siteConfig } from "@/lib/constants";
 
 function AnimatedSection({
@@ -36,6 +36,185 @@ const workflowSteps = [
   { label: "执行行动", sub: "Act", icon: "⚡" },
   { label: "积累经验", sub: "Reflect", icon: "💎" },
 ];
+
+/* Ascending qi particles */
+function QiParticle({ delay, x }: { delay: number; x: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 60, x }}
+      animate={{
+        opacity: [0, 0.8, 0.6, 0],
+        y: [60, -20, -80, -140],
+        x: [x, x + (Math.random() - 0.5) * 30, x + (Math.random() - 0.5) * 50],
+      }}
+      transition={{
+        duration: 3 + Math.random() * 2,
+        delay,
+        repeat: Infinity,
+        ease: "easeOut",
+      }}
+      className="absolute bottom-1/4 left-1/2 w-1 h-1 rounded-full"
+      style={{
+        background:
+          Math.random() > 0.5
+            ? "var(--gold)"
+            : "var(--purple-light)",
+        boxShadow:
+          Math.random() > 0.5
+            ? "0 0 6px var(--gold), 0 0 12px var(--gold)"
+            : "0 0 6px var(--purple-light), 0 0 12px var(--purple-light)",
+      }}
+    />
+  );
+}
+
+/* Ascending lobster with cultivation breakthrough effect */
+function AscensionLobster() {
+  const [phase, setPhase] = useState<"gather" | "ascend" | "burst" | "idle">("gather");
+
+  const startCycle = useCallback(() => {
+    setPhase("gather");
+    setTimeout(() => setPhase("ascend"), 2000);
+    setTimeout(() => setPhase("burst"), 3400);
+    setTimeout(() => setPhase("idle"), 5000);
+  }, []);
+
+  useEffect(() => {
+    // Initial delay then start
+    const t = setTimeout(() => {
+      startCycle();
+    }, 1500);
+    // Loop the cycle
+    const interval = setInterval(() => {
+      startCycle();
+    }, 8000);
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+    };
+  }, [startCycle]);
+
+  return (
+    <div className="relative flex items-center justify-center w-40 h-52">
+      {/* Qi particles rising around the lobster */}
+      {Array.from({ length: 12 }).map((_, i) => (
+        <QiParticle
+          key={i}
+          delay={i * 0.4 + 0.5}
+          x={(Math.random() - 0.5) * 60}
+        />
+      ))}
+
+      {/* Expanding energy rings on burst */}
+      <AnimatePresence>
+        {phase === "burst" && (
+          <>
+            <motion.div
+              initial={{ scale: 0.3, opacity: 0.8 }}
+              animate={{ scale: 2.5, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="absolute w-32 h-32 rounded-full border border-gold/50"
+              style={{
+                boxShadow: "0 0 30px rgba(212,168,83,0.3), inset 0 0 30px rgba(212,168,83,0.1)",
+              }}
+            />
+            <motion.div
+              initial={{ scale: 0.3, opacity: 0.6 }}
+              animate={{ scale: 2, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.15 }}
+              className="absolute w-32 h-32 rounded-full border border-purple-light/40"
+            />
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Gathering glow beneath lobster */}
+      <motion.div
+        animate={{
+          opacity: phase === "gather" ? [0, 0.4, 0.6] : phase === "ascend" ? [0.6, 0.8, 0.3] : phase === "burst" ? [0.8, 0] : 0,
+          scale: phase === "gather" ? [0.8, 1, 1.1] : phase === "burst" ? [1.1, 2] : 1,
+        }}
+        transition={{ duration: phase === "burst" ? 0.6 : 1.5, ease: "easeInOut" }}
+        className="absolute bottom-8 w-24 h-24 rounded-full"
+        style={{
+          background: "radial-gradient(circle, rgba(212,168,83,0.25) 0%, rgba(107,63,160,0.1) 50%, transparent 70%)",
+        }}
+      />
+
+      {/* Outer ring — breathes normally, flares on burst */}
+      <motion.div
+        animate={{
+          scale: phase === "burst" ? [1, 1.4, 1] : [1, 1.12, 1],
+          opacity: phase === "burst" ? [0.5, 0.8, 0.3] : [0.3, 0.1, 0.3],
+          borderColor: phase === "burst" ? "rgba(212,168,83,0.6)" : "rgba(212,168,83,0.3)",
+        }}
+        transition={{
+          duration: phase === "burst" ? 0.8 : 4,
+          repeat: phase === "burst" ? 0 : Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute inset-4 rounded-full border"
+      />
+
+      {/* Middle ring */}
+      <motion.div
+        animate={{
+          scale: phase === "burst" ? [1, 1.3, 1] : [1, 1.08, 1],
+          opacity: phase === "burst" ? [0.6, 0.9, 0.4] : [0.5, 0.2, 0.5],
+        }}
+        transition={{
+          duration: phase === "burst" ? 0.6 : 3,
+          repeat: phase === "burst" ? 0 : Infinity,
+          ease: "easeInOut",
+          delay: phase === "burst" ? 0.1 : 0.5,
+        }}
+        className="absolute inset-8 rounded-full border border-purple/40"
+      />
+
+      {/* The lobster — floats up during ascend, shakes on burst */}
+      <motion.span
+        animate={{
+          y: phase === "gather" ? [0, -3, 0] : phase === "ascend" ? [0, -28] : phase === "burst" ? [-28, -32, -26, -28] : [-28, -24, -28],
+          scale: phase === "burst" ? [1, 1.15, 1] : 1,
+          rotate: phase === "burst" ? [0, -5, 5, 0] : 0,
+        }}
+        transition={{
+          duration: phase === "gather" ? 2 : phase === "ascend" ? 1.4 : phase === "burst" ? 0.5 : 3,
+          repeat: phase === "gather" || phase === "idle" ? Infinity : 0,
+          ease: phase === "ascend" ? [0.16, 1, 0.3, 1] : "easeInOut",
+        }}
+        className="relative text-6xl select-none z-10"
+        style={{
+          filter: phase === "burst"
+            ? "drop-shadow(0 0 20px rgba(212,168,83,0.6)) drop-shadow(0 0 40px rgba(107,63,160,0.4))"
+            : phase === "ascend"
+              ? "drop-shadow(0 0 12px rgba(212,168,83,0.3))"
+              : "none",
+        }}
+      >
+        🦞
+      </motion.span>
+
+      {/* Ascending light beam during ascend phase */}
+      <AnimatePresence>
+        {(phase === "ascend" || phase === "burst") && (
+          <motion.div
+            initial={{ opacity: 0, scaleY: 0 }}
+            animate={{ opacity: [0, 0.3, 0.15], scaleY: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-full origin-bottom"
+            style={{
+              background: "linear-gradient(to top, rgba(212,168,83,0.4), rgba(107,63,160,0.2), transparent)",
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -72,42 +251,14 @@ export default function Home() {
         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-gold-dim to-transparent opacity-40" />
 
         <div className="relative z-10 flex flex-col items-center px-6 text-center">
-          {/* Cultivation core — pulsing dantian */}
+          {/* Cultivation core — ascending lobster */}
           <motion.div
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative mb-10"
+            className="relative mb-6"
           >
-            <div className="relative flex items-center justify-center w-32 h-32">
-              {/* Outer ring pulse */}
-              <motion.div
-                animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.1, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 rounded-full border border-gold/30"
-              />
-              {/* Middle ring */}
-              <motion.div
-                animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.2, 0.5] }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5,
-                }}
-                className="absolute inset-3 rounded-full border border-purple/40"
-              />
-              {/* Core glow */}
-              <div
-                className="absolute inset-6 rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(212,168,83,0.15) 0%, transparent 70%)",
-                }}
-              />
-              {/* Emoji */}
-              <span className="relative text-6xl select-none">🦞</span>
-            </div>
+            <AscensionLobster />
           </motion.div>
 
           {/* Title */}
