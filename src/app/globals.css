@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a12;
+  --foreground: #e8e0d4;
+  --gold: #d4a853;
+  --gold-light: #f0d48a;
+  --gold-dim: #8b7355;
+  --crimson: #c23a3a;
+  --crimson-glow: #ff4d4d;
+  --purple-deep: #2d1b4e;
+  --purple: #6b3fa0;
+  --purple-light: #a78bfa;
+  --cyan: #4dd0e1;
+  --cyan-dim: #2a7a85;
+  --card: #12121e;
+  --card-alt: #1a1a2e;
+  --border: #2a2a3e;
+  --text-secondary: #a09888;
+  --text-muted: #6b6358;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dim: var(--gold-dim);
+  --color-crimson: var(--crimson);
+  --color-crimson-glow: var(--crimson-glow);
+  --color-purple-deep: var(--purple-deep);
+  --color-purple: var(--purple);
+  --color-purple-light: var(--purple-light);
+  --color-cyan: var(--cyan);
+  --color-cyan-dim: var(--cyan-dim);
+  --color-card: var(--card);
+  --color-card-alt: var(--card-alt);
+  --color-border: var(--border);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
+  --font-serif: "Songti SC", "STSong", "SimSun", serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
